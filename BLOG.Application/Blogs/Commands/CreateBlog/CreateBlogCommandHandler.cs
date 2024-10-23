@@ -11,16 +11,9 @@ using System.Threading.Tasks;
 
 namespace BLOG.Application.Blogs.Commands.CreateBlog
 {
-    public class CreateBlogCommandHandler : IRequestHandler<CreateBlogCommand, BlogVm>
+    public class CreateBlogCommandHandler(IBlogRepository blogRepository, IMapper mapper)
+        : IRequestHandler<CreateBlogCommand, BlogVm>
     {
-        private readonly IBlogRepository _blogRepository;
-        private readonly IMapper _mapper;
-
-        public CreateBlogCommandHandler(IBlogRepository blogRepository , IMapper mapper)
-        {
-            _blogRepository = blogRepository;
-            _mapper = mapper;
-        }
         public async Task<BlogVm> Handle(CreateBlogCommand request, CancellationToken cancellationToken)
         {
 
@@ -32,8 +25,8 @@ namespace BLOG.Application.Blogs.Commands.CreateBlog
                 Description = request.Description,
             };
 
-            var result = await _blogRepository.CreateBlogAsync(blog);
-            return _mapper.Map<BlogVm>(result);
+            var result = await blogRepository.CreateBlogAsync(blog);
+            return mapper.Map<BlogVm>(result);
 
         }
     }

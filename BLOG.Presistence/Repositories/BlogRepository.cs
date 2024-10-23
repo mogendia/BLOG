@@ -10,46 +10,41 @@ using System.Threading.Tasks;
 
 namespace BLOG.Presistence.Repositories
 {
-    public class BlogRepository : IBlogRepository
+    public class BlogRepository(BlogDbContext context) : IBlogRepository
     {
-        private readonly BlogDbContext _context;
-        public BlogRepository(BlogDbContext context)
-        {
-            _context = context;
-        }
         public async Task<Blog> CreateBlogAsync(Blog blog)
         {
-            await _context.Blogs.AddAsync(blog);
-            await _context.SaveChangesAsync();
+            await context.Blogs.AddAsync(blog);
+            await context.SaveChangesAsync();
             return blog;
         }
 
         public async Task<int> DeleteBlogAsync(int id)
         {
-           return await _context.Blogs.Where(ctg => ctg.Id == id).ExecuteDeleteAsync();
+           return await context.Blogs.Where(ctg => ctg.Id == id).ExecuteDeleteAsync();
         }
 
         public async Task<List<Blog>> GetAllBlogAsync()
         {
-            var blog = await _context.Blogs.ToListAsync();
+            var blog = await context.Blogs.ToListAsync();
             return blog;
         }
 
         public async Task<Blog> GetBlogByIdAsync(int id)
         {
-            return await _context.Blogs.FindAsync(id);
+            return await context.Blogs.FindAsync(id);
         }
 
         public async Task<int> UpdateBlogAsync(Blog blog)
         {
-            var edit = await _context.Blogs.FindAsync(blog.Id);
+            var edit = await context.Blogs.FindAsync(blog.Id);
             if (edit == null)
                 throw new Exception("id not found");
             blog.Id = edit.Id;
             blog.Author = edit.Author;
             blog.Description = edit.Description;
             blog.Name = edit.Name;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return blog.Id;
 
         }
